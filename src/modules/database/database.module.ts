@@ -17,10 +17,11 @@ import { DataSource } from 'typeorm';
                     username: db.username,
                     password: db.password,
                     database: db.name,
-                    entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
+                    // entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
+                    entities: [__dirname + '/../../modules/**/entity/*.public.entity{.ts,.js}'],
                     synchronize: process.env.NODE_ENV === 'development',
                     migrations: [__dirname + '/../../database/migrations/*{.ts,.js}'],
-                    logging: process.env.NODE_ENV !== 'production',
+                    // logging: process.env.NODE_ENV !== 'production',
                 };
             },
             inject: [ConfigService],

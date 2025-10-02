@@ -1,15 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ProductEntity } from "./entity/product.entity";
+import { ProductTenantEntity } from "./entity/product.tenant.entity";
 import { Repository } from "typeorm";
 import { Request } from "express"
 
 @Injectable()
 export class ProductService {
-    private getRepo(req: Request): Repository<ProductEntity> {
-        return req.tenantDataSource.getRepository(ProductEntity);
+    private getRepo(req: Request): Repository<ProductTenantEntity> {
+        return req.tenantDataSource.getRepository(ProductTenantEntity);
     }
 
-    async createProduct(req: Request, data: Partial<ProductEntity>) {
+    async createProduct(req: Request, data: Partial<ProductTenantEntity>) {
         const repo = this.getRepo(req);
         const product = repo.create(data);
 
@@ -22,7 +22,7 @@ export class ProductService {
         return repo.find();
     }
 
-    async updateProduct(req: Request, id: number, data: Partial<ProductEntity>) {
+    async updateProduct(req: Request, id: number, data: Partial<ProductTenantEntity>) {
         const repo = this.getRepo(req);
         const product = await repo.findOneBy({ id });
         if (!product) {

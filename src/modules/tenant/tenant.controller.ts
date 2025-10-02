@@ -10,7 +10,6 @@ export class TenantController {
     async createTenant(
         @Body() createTenantDto: CreateTenantDto,
     ) {
-        console.log('create tenant controller')
         return this.tenantService.createTenant(createTenantDto);
     }
 

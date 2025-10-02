@@ -1,6 +1,6 @@
 import {Body, Controller, Delete, Get, Param, Post, Put, Req} from '@nestjs/common';
 import {ProductService} from "./product.service";
-import {ProductEntity} from "./entity/product.entity";
+import {ProductTenantEntity} from "./entity/product.tenant.entity";
 import {Request} from "express"
 
 @Controller('tenant/product')
@@ -10,7 +10,7 @@ export class ProductController {
     @Post()
     async create(
         @Req() req: Request,
-        @Body() body: Partial<ProductEntity>) {
+        @Body() body: Partial<ProductTenantEntity>) {
         return this.productService.createProduct(req, body);
     }
 
@@ -32,7 +32,7 @@ export class ProductController {
     async update(
         @Req() req: Request,
         @Param('id') id: number,
-        @Body() body: Partial<ProductEntity>,
+        @Body() body: Partial<ProductTenantEntity>,
     ) {
         return this.productService.updateProduct(req, id, body);
     }

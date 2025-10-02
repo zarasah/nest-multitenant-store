@@ -11,5 +11,4 @@ export default () => ({
     jwt: {
         secret: process.env.JWT_SECRET,
     },
-    tenantEntitiesPath: __dirname + '/../modules/**/entities/*.entity{.ts,.js}',
 });

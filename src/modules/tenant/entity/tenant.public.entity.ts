@@ -1,7 +1,7 @@
 import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn} from 'typeorm';
 
 @Entity({ name: 'tenant', schema: 'public' })
-export class TenantEntity {
+export class TenantPublicEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
