@@ -6,18 +6,24 @@ export class UserTenantEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ unique: true })
+    @Column({ type: 'varchar', nullable: false })
+    firstName: string;
+
+    @Column({ type: 'varchar', nullable: true })
+    lastName: string;
+
+    @Column({ type: 'varchar', unique: true, nullable: false })
     email: string;
 
-    @Column()
+    @Column({ type: 'varchar', nullable: false })
     password: string;
 
     @Column({ type: "varchar", nullable: false})
     role: UserRoleEnum;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     updatedAt: Date;
 }

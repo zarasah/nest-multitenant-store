@@ -11,9 +11,9 @@ export class TenantPublicEntity {
     @Column({ unique: true })
     schemaName: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     updatedAt: Date;
 }
