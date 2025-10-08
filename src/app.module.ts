@@ -8,6 +8,10 @@ import { TenantModule } from './modules/tenant/tenant.module';
 import { ProductModule } from './modules/product/product.module';
 import config from "./configs/config";
 import {TenantMiddleware} from "./common/middleware/tenant.middleware";
+import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
+import {ExcludePasswordInterceptor} from "./common/interceptors/exclude.password.interceptor";
+import {APP_INTERCEPTOR} from "@nestjs/core";
 
 @Module({
   imports: [
@@ -20,9 +24,17 @@ import {TenantMiddleware} from "./common/middleware/tenant.middleware";
     DatabaseModule,
     TenantModule,
     ProductModule,
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+      AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ExcludePasswordInterceptor,
+    },
+  ],
 })
 // export class AppModule {}
 

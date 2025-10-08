@@ -5,7 +5,7 @@ export class ProductTenantEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({type: 'varchar', nullable: false})
     name: string;
 
     @Column('decimal', { precision: 10, scale: 2 })
@@ -14,9 +14,9 @@ export class ProductTenantEntity {
     @Column({ nullable: true })
     description?: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     updatedAt: Date;
 }
