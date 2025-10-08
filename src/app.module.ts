@@ -10,6 +10,8 @@ import config from "./configs/config";
 import {TenantMiddleware} from "./common/middleware/tenant.middleware";
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
+import {ExcludePasswordInterceptor} from "./common/interceptors/exclude.password.interceptor";
+import {APP_INTERCEPTOR} from "@nestjs/core";
 
 @Module({
   imports: [
@@ -26,7 +28,13 @@ import { AuthModule } from './modules/auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+      AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ExcludePasswordInterceptor,
+    },
+  ],
 })
 // export class AppModule {}
 
