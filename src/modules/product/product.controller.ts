@@ -1,12 +1,15 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Req} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards} from '@nestjs/common';
 import {ProductService} from "./product.service";
 import {ProductTenantEntity} from "./entity/product.tenant.entity";
 import {Request} from "express"
+import {RoleGuard} from "../../common/guards/role.guard";
+import {JwtAuthGuard} from "../../common/guards/jwt.auth.guard";
 
 @Controller('tenant/product')
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
+    @UseGuards(JwtAuthGuard, RoleGuard)
     @Post()
     async create(
         @Req() req: Request,

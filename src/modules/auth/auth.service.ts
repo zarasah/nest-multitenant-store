@@ -9,6 +9,7 @@ import {JwtService} from "@nestjs/jwt";
 import * as bcrypt from 'bcryptjs';
 import {UserService} from "../user/user.service";
 import {LoginDto} from "./dto/login.dto";
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -20,20 +21,36 @@ export class AuthService {
     ) {
     }
 
-    private generateToken(user: any) {
+    // private generateToken(user: any) {
+    //     const payload = {
+    //         id: user.id,
+    //         email: user.email,
+    //         firstName: user.firstName,
+    //         lastName: user.lastName,
+    //         role: user.role,
+    //     };
+    //     const accessToken =  this.jwtService.sign(payload)
+    //     return {
+    //         accessToken,
+    //     };
+    // }
+
+    private generateToken(user: any, schemaName?: string) {
         const payload = {
             id: user.id,
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
             role: user.role,
+            ...(schemaName ? { schemaName } : {}),
         };
-        const accessToken =  this.jwtService.sign(payload)
+
         return {
-            accessToken,
+            accessToken: this.jwtService.sign(payload),
         };
     }
 
+    /// Public User ///
 
     async registerPublicUser( publicUserCreateDto: PublicUserCreateDto) {
         const existing = await this.userService.findByEmailPublic(publicUserCreateDto.email);
@@ -69,7 +86,37 @@ export class AuthService {
         return this.generateToken(user);
     }
 
-    async registerTenantUser( tenantUserCreateDto: TenantUserCreateDto) {
+    /// Tenant User ///
 
+    async registerTenantUser( req: Request, tenantUserCreateDto: TenantUserCreateDto) {
+        const existing = await this.userService.findByEmailTenant(req, tenantUserCreateDto.email);
+        if (existing) {
+            throw new HttpException('Email already exists', HttpStatus.CONFLICT);
+        }
+
+        const hashed = await bcrypt.hash(tenantUserCreateDto.password, 10);
+        const user = await this.userService.createTenantUser(req, {
+            ...tenantUserCreateDto,
+            password: hashed,
+        });
+
+        const token = this.generateToken(user);
+        return {...user, token}
+    }
+
+    async loginTenant(req: Request, loginDto: LoginDto) {
+        const user = await this.userService.findByEmailTenant(req, loginDto.email);
+
+        if (!user) {
+            throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+        }
+
+        const valid = await bcrypt.compare(loginDto.password, user.password);
+
+        if (!valid) {
+            throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+        }
+
+        return this.generateToken(user);
     }
 }

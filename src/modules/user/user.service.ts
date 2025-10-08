@@ -16,7 +16,7 @@ export class UserService {
         return this.userPublicRepository.findOne({ where: { email } });
     }
 
-    async findByEmailTenant(req: Request, email: string, schemaName: string) {
+    async findByEmailTenant(req: Request, email: string) {
         const repo = req.tenantDataSource.getRepository(UserTenantEntity);
         return repo.findOne({ where: { email } });
     }
@@ -26,7 +26,7 @@ export class UserService {
         return this.userPublicRepository.save(user);
     }
 
-    async createTenantUser(req: Request, data: Partial<UserTenantEntity>, schemaName: string) {
+    async createTenantUser(req: Request, data: Partial<UserTenantEntity>) {
         const repo = req.tenantDataSource.getRepository(UserTenantEntity);
         const user = repo.create(data);
         return repo.save(user);
