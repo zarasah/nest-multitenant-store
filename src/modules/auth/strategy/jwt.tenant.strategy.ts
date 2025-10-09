@@ -11,25 +11,23 @@ export class JwtTenantStrategy extends PassportStrategy(Strategy, 'jwt-tenant') 
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: 'yourTenantSecretKey',
+            secretOrKey: 'yourSecretKey',
             passReqToCallback: true,
         });
     }
 
     async validate(req: Request, payload: any) {
-        // const schemaName = req.headers['x-tenant-id'] as string;
-        // if (!schemaName) {
-        //     throw new UnauthorizedException('Tenant header is missing');
-        // }
-        //
-        // const user = await this.userService.findById(req, payload.id, schemaName);
-        // if (!user) {
-        //     throw new UnauthorizedException('User not found in tenant schema');
-        // }
-        //
-        // return {
-        //     ...user,
-        //     schemaName,
-        // };
+        if (!payload.schemaName) {
+            throw new UnauthorizedException('Tenant schema missing');
+        }
+
+        return {
+            id: payload.id,
+            email: payload.email,
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            role: payload.role,
+            schemaName: payload.schemaName,
+        }
     }
 }

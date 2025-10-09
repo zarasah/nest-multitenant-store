@@ -9,6 +9,7 @@ import {UserTenantEntity} from "../user/entity/user.tenant.entity";
 import {AuthTenantController} from "./auth.tenant.controller";
 import {UserService} from "../user/user.service";
 import {JwtStrategy} from "./strategy/jwt.strategy";
+import {JwtTenantStrategy} from "./strategy/jwt.tenant.strategy";
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import {JwtStrategy} from "./strategy/jwt.strategy";
       TypeOrmModule.forFeature([UserPublicEntity, UserTenantEntity])
   ],
   controllers: [AuthController, AuthTenantController],
-  providers: [JwtStrategy, AuthService, UserService],
+  providers: [JwtStrategy, JwtTenantStrategy, AuthService, UserService],
   exports: [JwtModule]
 })
 export class AuthModule {}

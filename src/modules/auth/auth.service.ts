@@ -100,7 +100,9 @@ export class AuthService {
             password: hashed,
         });
 
-        const token = this.generateToken(user);
+        const schemaName = req.headers['x-tenant-id'] as string;
+
+        const token = this.generateToken(user, schemaName);
         return {...user, token}
     }
 
@@ -117,6 +119,8 @@ export class AuthService {
             throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
         }
 
-        return this.generateToken(user);
+        const schemaName = req.headers['x-tenant-id'] as string;
+
+        return this.generateToken(user, schemaName);
     }
 }
