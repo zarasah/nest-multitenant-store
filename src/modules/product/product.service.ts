@@ -1,30 +1,34 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ProductTenantEntity } from "./entity/product.tenant.entity";
 import { Repository } from "typeorm";
-import { Request } from "express"
+import {getTenantDataSource} from "../database/tanent.conection.manager";
+import {CurrentTenantUser} from "../../common/types/current.tenant.user";
 
 @Injectable()
 export class ProductService {
-    private getRepo(req: Request): Repository<ProductTenantEntity> {
-        return req.tenantDataSource.getRepository(ProductTenantEntity);
+    private async getRepo(schemaName: string): Promise<Repository<ProductTenantEntity>> {
+        const dataSource = await getTenantDataSource(schemaName);
+        return dataSource.getRepository(ProductTenantEntity);
     }
 
-    async createProduct(req: Request, data: Partial<ProductTenantEntity>) {
-        const repo = this.getRepo(req);
+
+    async createProduct(user: CurrentTenantUser, data: Partial<ProductTenantEntity>) {
+        const repo = await this.getRepo(user.schemaName);
         const product = repo.create(data);
 
         return repo.save(product);
     }
 
-    async getAllProducts(req: Request) {
-        const repo = this.getRepo(req);
+    async getAllProducts(schemaName: string) {
+        const repo = await this.getRepo(schemaName);
 
         return repo.find();
     }
 
-    async updateProduct(req: Request, id: number, data: Partial<ProductTenantEntity>) {
-        const repo = this.getRepo(req);
+    async updateProduct(user: CurrentTenantUser, id: number, data: Partial<ProductTenantEntity>) {
+        const repo = await this.getRepo(user.schemaName);
         const product = await repo.findOneBy({ id });
+
         if (!product) {
             throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
         }
@@ -33,9 +37,10 @@ export class ProductService {
         return repo.save(product);
     }
 
-    async deleteProduct(req: Request, id: number) {
-        const repo = this.getRepo(req);
+    async deleteProduct(user: CurrentTenantUser, id: number) {
+        const repo = await this.getRepo(user.schemaName);
         const product = await repo.findOneBy({ id });
+
         if (!product) {
             throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
         }

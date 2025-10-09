@@ -1,4 +1,4 @@
-import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
+import {MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import * as process from "process";
@@ -42,6 +42,10 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
         .apply(TenantMiddleware)
-        .forRoutes('*');
+        // .forRoutes('*');
+        .forRoutes(
+            { path: 'tenant/auth/login', method: RequestMethod.POST },
+            { path: 'tenant/auth/register', method: RequestMethod.POST },
+        );
   }
 }

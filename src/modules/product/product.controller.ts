@@ -1,50 +1,56 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {ProductService} from "./product.service";
 import {ProductTenantEntity} from "./entity/product.tenant.entity";
-import {Request} from "express"
-import {RoleGuard} from "../../common/guards/role.guard";
-import {JwtAuthGuard} from "../../common/guards/jwt.auth.guard";
+import {JwtTenantAuthGuard} from "../../common/guards/jwt.tenant.auth.guard";
+import {User} from "../../common/decorators/current.user.decorator";
+import {CurrentTenantUser} from "../../common/types/current.tenant.user";
 
 @Controller('tenant/product')
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
-    @UseGuards(JwtAuthGuard, RoleGuard)
+    @UseGuards(JwtTenantAuthGuard)
     @Post()
     async create(
-        @Req() req: Request,
+        @User() user,
         @Body() body: Partial<ProductTenantEntity>) {
-        return this.productService.createProduct(req, body);
+        return this.productService.createProduct(user, body);
     }
 
+    @UseGuards(JwtTenantAuthGuard)
     @Get()
-    async findAll(@Req() req: Request) {
-        return this.productService.getAllProducts(req);
+    async findAll(
+        @User('schemaName') schemaName: string,
+    ) {
+        return this.productService.getAllProducts(schemaName);
     }
 
+    @UseGuards(JwtTenantAuthGuard)
     @Get(':id')
     async findOne(
-        @Req() req: Request,
+        @User() user: CurrentTenantUser,
         @Param('id') id: number
     ) {
-        const products = await this.productService.getAllProducts(req);
+        const products = await this.productService.getAllProducts(user.schemaName);
         return products.find(p => p.id === id);
     }
 
+    @UseGuards(JwtTenantAuthGuard)
     @Put(':id')
     async update(
-        @Req() req: Request,
+        @User() user: CurrentTenantUser,
         @Param('id') id: number,
         @Body() body: Partial<ProductTenantEntity>,
     ) {
-        return this.productService.updateProduct(req, id, body);
+        return this.productService.updateProduct(user, id, body);
     }
 
+    @UseGuards(JwtTenantAuthGuard)
     @Delete(':id')
     async remove(
-        @Req() req: Request,
+        @User() user: CurrentTenantUser,
         @Param('id') id: number
     ) {
-        return this.productService.deleteProduct(req, id);
+        return this.productService.deleteProduct(user, id);
     }
 }
